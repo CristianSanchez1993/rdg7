@@ -14,6 +14,7 @@ class UserFormScreen extends StatefulWidget {
 
 class _UserFormScreenState extends State<UserFormScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool _formularioValido = false;
 
   late TextEditingController _idController;
   late TextEditingController _identificationController;
@@ -24,6 +25,8 @@ class _UserFormScreenState extends State<UserFormScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _secondLastNameController;
   late TextEditingController _phoneController;
+
+  bool _isActive = true;
 
   @override
   void initState() {
@@ -39,6 +42,30 @@ class _UserFormScreenState extends State<UserFormScreen> {
     _lastNameController = TextEditingController(text: user?.lastName ?? '');
     _secondLastNameController = TextEditingController(text: user?.secondLastName ?? '');
     _phoneController = TextEditingController(text: user?.phone ?? '');
+
+    _isActive = user?.isActive ?? true;
+
+    _identificationController.addListener(validarFormulario);
+    _passwordController.addListener(validarFormulario);
+    _emailController.addListener(validarFormulario);
+    _firstNameController.addListener(validarFormulario);
+    _secondNameController.addListener(validarFormulario);
+    _lastNameController.addListener(validarFormulario);
+    _secondLastNameController.addListener(validarFormulario);
+    _phoneController.addListener(validarFormulario);
+  }
+
+  void validarFormulario() {
+    setState(() {
+      _formularioValido = _identificationController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty &&
+          _emailController.text.isNotEmpty &&
+          _firstNameController.text.isNotEmpty &&
+          _secondNameController.text.isNotEmpty &&
+          _lastNameController.text.isNotEmpty &&
+          _secondLastNameController.text.isNotEmpty &&
+          _phoneController.text.isNotEmpty;
+    });
   }
 
   @override
@@ -57,7 +84,10 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 5),
+      ),
     );
   }
 
@@ -65,15 +95,15 @@ class _UserFormScreenState extends State<UserFormScreen> {
     if (_formKey.currentState!.validate()) {
       final newUser = UserModel(
         id: int.tryParse(_idController.text) ?? 0,
-
         identification: _identificationController.text,
-        password: _passwordController.text.isNotEmpty ? _passwordController.text : "",
+        password: _passwordController.text,
         email: _emailController.text,
         firstName: _firstNameController.text,
         secondName: _secondNameController.text,
         lastName: _lastNameController.text,
         secondLastName: _secondLastNameController.text,
         phone: _phoneController.text,
+        isActive: _isActive, // ✅ CORRECCIÓN APLICADA
       );
 
       try {
@@ -85,6 +115,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
           showSnackBar("Usuario actualizado exitosamente");
         }
 
+        await Future.delayed(const Duration(seconds: 5));
         Navigator.pop(context);
       } catch (e) {
         showSnackBar("Ocurrió un error");
@@ -96,12 +127,12 @@ class _UserFormScreenState extends State<UserFormScreen> {
     String label,
     TextEditingController controller, {
     bool obscure = false,
-    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: obscure,
-      validator: validator,
+      validator: (value) =>
+          value == null || value.isEmpty ? "Este campo es obligatorio" : null,
       decoration: InputDecoration(labelText: label),
     );
   }
@@ -122,42 +153,62 @@ class _UserFormScreenState extends State<UserFormScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              buildTextField("Identificacion", _identificationController,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? "Required" : null),
+              buildTextField("Identificación", _identificationController),
               buildTextField("Contraseña", _passwordController, obscure: true),
-              buildTextField("Correo Electrónico", _emailController,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? "Required" : null),
-              buildTextField("Primer Nombre", _firstNameController,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? "Required" : null),
+              buildTextField("Correo Electrónico", _emailController),
+              buildTextField("Primer Nombre", _firstNameController),
               buildTextField("Segundo Nombre", _secondNameController),
-              buildTextField("Apellido", _lastNameController,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? "Required" : null),
+              buildTextField("Apellido", _lastNameController),
               buildTextField("Segundo Apellido", _secondLastNameController),
               buildTextField("Teléfono", _phoneController),
+
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: saveUser,
-                style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                foregroundColor: Colors.white, // ✅ texto blanco
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Estado del usuario:",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Row(
+                    children: [
+                      Text(_isActive ? "Activo" : "Inactivo"),
+                      Switch(
+                        value: _isActive,
+                        onChanged: (value) {
+                          setState(() {
+                            _isActive = value;
+                          });
+                        },
+                        activeColor: Colors.teal,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
+
+              const SizedBox(height: 20),
+
+              ElevatedButton(
+                onPressed: _formularioValido ? saveUser : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
                 child: Text(
-                isEditing ? "Actualizar" : "Crear",
-                style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-          ],
+                  isEditing ? "Actualizar" : "Crear",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

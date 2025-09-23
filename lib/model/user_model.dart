@@ -8,6 +8,7 @@ class UserModel {
   final String lastName;
   final String secondLastName;
   final String phone;
+  final bool isActive;
 
   UserModel({
     required this.id,
@@ -19,6 +20,7 @@ class UserModel {
     required this.lastName,
     required this.secondLastName,
     required this.phone,
+    required this.isActive,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class UserModel {
       lastName: json['lastName'] as String,
       secondLastName: json['secondLastName'] as String,
       phone: json['phone'] as String,
+      isActive: json['isActive'] == 1,
     );
   }
 
@@ -46,6 +49,7 @@ class UserModel {
       'lastName': lastName,
       'secondLastName': secondLastName,
       'phone': phone,
+      'isActive': isActive ? 1 : 0,
     };
   }
 }

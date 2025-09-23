@@ -12,18 +12,67 @@ class UserListScreen extends StatefulWidget {
 }
 
 class _UserListScreenState extends State<UserListScreen> {
-
   @override
   void initState() {
-     super.initState();
-     WidgetsBinding.instance.addPostFrameCallback((_) {
-       context.read<UserBloc>().loadUsers();
-  });
-}
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserBloc>().loadUsers();
+    });
+  }
 
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+      SnackBar(content: Text(message), duration: const Duration(seconds: 5)), // ⏱️ Modificado
+    );
+  }
+
+  // ✅ NUEVA FUNCIÓN: Mostrar detalle completo en ModalBottomSheet
+  void mostrarDetalleUsuario(BuildContext context, UserModel user) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text("ID: ${user.id}"),
+              Text("Identificación: ${user.identification}"),
+              Text("Contraseña: ${user.password}"),
+              Text("Correo: ${user.email}"),
+              Text("Nombre: ${user.firstName}"),
+              Text("Segundo nombre: ${user.secondName}"),
+              Text("Apellido: ${user.lastName}"),
+              Text("Segundo apellido: ${user.secondLastName}"),
+              Text("Teléfono: ${user.phone}"),
+              Text("Estado: ${user.isActive == true ? "Activo" : "Inactivo"}"),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cerrar"),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -57,6 +106,9 @@ class _UserListScreenState extends State<UserListScreen> {
                   itemBuilder: (context, index) {
                     final user = users[index];
                     return ListTile(
+                      // ✅ NUEVO: Mostrar detalle al tocar el ListTile
+                      onTap: () => mostrarDetalleUsuario(context, user),
+
                       title: Text("${user.firstName} ${user.lastName}"),
                       subtitle: Text(user.email),
                       trailing: Row(
@@ -85,11 +137,13 @@ class _UserListScreenState extends State<UserListScreen> {
                                   actions: [
                                     TextButton(
                                       child: const Text("Cancelar"),
-                                      onPressed: () => Navigator.pop(context, false),
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
                                     ),
                                     TextButton(
                                       child: const Text("Eliminar"),
-                                      onPressed: () => Navigator.pop(context, true),
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
                                     ),
                                   ],
                                 ),
@@ -100,7 +154,8 @@ class _UserListScreenState extends State<UserListScreen> {
                                     .read<UserBloc>()
                                     .deleteUser(user.id.toString())
                                     .then((_) => showSnackBar("Usuario eliminado"))
-                                    .catchError((e) => showSnackBar("Error al eliminar usuario"));
+                                    .catchError((e) =>
+                                        showSnackBar("Error al eliminar usuario"));
                               }
                             },
                           ),
