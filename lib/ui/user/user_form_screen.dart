@@ -67,7 +67,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
         id: int.tryParse(_idController.text) ?? 0,
 
         identification: _identificationController.text,
-        passwordHash: _passwordController.text.isNotEmpty ? _passwordController.text : "",
+        password: _passwordController.text.isNotEmpty ? _passwordController.text : "",
         email: _emailController.text,
         firstName: _firstNameController.text,
         secondName: _secondNameController.text,
@@ -112,6 +112,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(isEditing ? "Editar Usuario" : "Crear Usuario"),
         backgroundColor: Colors.teal,
       ),
@@ -121,29 +122,42 @@ class _UserFormScreenState extends State<UserFormScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              buildTextField("Identification", _identificationController,
+              buildTextField("Identificacion", _identificationController,
                   validator: (value) =>
                       value == null || value.isEmpty ? "Required" : null),
-              buildTextField("Password", _passwordController, obscure: true),
-              buildTextField("Email", _emailController,
+              buildTextField("Contraseña", _passwordController, obscure: true),
+              buildTextField("Correo Electrónico", _emailController,
                   validator: (value) =>
                       value == null || value.isEmpty ? "Required" : null),
-              buildTextField("First Name", _firstNameController,
+              buildTextField("Primer Nombre", _firstNameController,
                   validator: (value) =>
                       value == null || value.isEmpty ? "Required" : null),
-              buildTextField("Second Name", _secondNameController),
-              buildTextField("Last Name", _lastNameController,
+              buildTextField("Segundo Nombre", _secondNameController),
+              buildTextField("Apellido", _lastNameController,
                   validator: (value) =>
                       value == null || value.isEmpty ? "Required" : null),
-              buildTextField("Second Last Name", _secondLastNameController),
-              buildTextField("Phone", _phoneController),
+              buildTextField("Segundo Apellido", _secondLastNameController),
+              buildTextField("Teléfono", _phoneController),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: saveUser,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                child: Text(isEditing ? "Actualizar" : "Crear"),
+                style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white, // ✅ texto blanco
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
               ),
-            ],
+            ),
+                child: Text(
+                isEditing ? "Actualizar" : "Crear",
+                style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+          ],
           ),
         ),
       ),
