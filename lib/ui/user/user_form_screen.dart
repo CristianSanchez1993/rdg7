@@ -103,7 +103,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
         lastName: _lastNameController.text,
         secondLastName: _secondLastNameController.text,
         phone: _phoneController.text,
-        isActive: _isActive, // ✅ CORRECCIÓN APLICADA
+        isActive: _isActive, 
       );
 
       try {
