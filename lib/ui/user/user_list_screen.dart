@@ -119,10 +119,15 @@ class _UserListScreenState extends State<UserListScreen> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => UserFormScreen(user: user),
-                                ),
-                              );
+                              MaterialPageRoute(
+                              builder: (_) => UserFormScreen(user: user),
+                             ),
+                                ).then((value) {
+  // Si se hizo una modificación, recargar usuarios
+                              if (value == true) {
+                                context.read<UserBloc>().loadUsers();
+                                }
+                                  });
                             },
                           ),
                           IconButton(

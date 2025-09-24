@@ -116,7 +116,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
         }
 
         await Future.delayed(const Duration(seconds: 5));
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       } catch (e) {
         showSnackBar("Ocurrió un error");
       }

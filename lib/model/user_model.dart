@@ -34,7 +34,7 @@ class UserModel {
       lastName: json['lastName'] as String,
       secondLastName: json['secondLastName'] as String,
       phone: json['phone'] as String,
-      isActive: json['isActive'] == 1,
+      isActive: json['isActive'] as bool,
     );
   }
 
@@ -49,7 +49,7 @@ class UserModel {
       'lastName': lastName,
       'secondLastName': secondLastName,
       'phone': phone,
-      'isActive': isActive ? 1 : 0,
+      'isActive': isActive,
     };
   }
 }
