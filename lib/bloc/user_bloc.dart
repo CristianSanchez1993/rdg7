@@ -36,7 +36,7 @@ class UserBloc {
   Future<void> createUser(UserModel user) async {
     final createdUser = await _repository.createUser(user);
     if (createdUser != null) {
-      await loadUsers(); // recargar desde base de datos
+      await loadUsers(); 
       _messageController.sink.add("Usuario creado exitosamente");
     }
   }
@@ -44,7 +44,7 @@ class UserBloc {
   Future<void> updateUser(UserModel user) async {
     final updatedUser = await _repository.updateUser(user);
     if (updatedUser != null) {
-      await loadUsers(); // recargar desde base de datos
+      await loadUsers();
       _messageController.sink.add("Usuario actualizado exitosamente");
     }
   }
@@ -52,7 +52,7 @@ class UserBloc {
   Future<void> deleteUser(String id) async {
     final success = await _repository.deleteUser(id);
     if (success) {
-      await loadUsers(); // recargar desde base de datos
+      await loadUsers();
       _messageController.sink.add("Usuario eliminado exitosamente");
     }
   }

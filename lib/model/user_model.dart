@@ -27,7 +27,7 @@ class UserModel {
     return UserModel(
       id: json['id'] as int,
       identification: json['identification'] as String,
-      password: json['passwordHash'] as String, // ✅ CAMBIADO
+      password: json['passwordHash'] as String,
       email: json['email'] as String,
       firstName: json['firstName'] as String,
       secondName: json['secondName'] as String,
@@ -42,7 +42,7 @@ class UserModel {
     return {
       'id': id,
       'identification': identification,
-      'password': password, // ✅ CAMBIADO
+      'password': password,
       'email': email,
       'firstName': firstName,
       'secondName': secondName,

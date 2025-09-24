@@ -22,11 +22,10 @@ class _UserListScreenState extends State<UserListScreen> {
 
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 5)), // ⏱️ Modificado
+      SnackBar(content: Text(message), duration: const Duration(seconds: 5)),
     );
   }
 
-  // ✅ NUEVA FUNCIÓN: Mostrar detalle completo en ModalBottomSheet
   void mostrarDetalleUsuario(BuildContext context, UserModel user) {
     showModalBottomSheet(
       context: context,
@@ -106,7 +105,6 @@ class _UserListScreenState extends State<UserListScreen> {
                   itemBuilder: (context, index) {
                     final user = users[index];
                     return ListTile(
-                      // ✅ NUEVO: Mostrar detalle al tocar el ListTile
                       onTap: () => mostrarDetalleUsuario(context, user),
 
                       title: Text("${user.firstName} ${user.lastName}"),
@@ -123,7 +121,6 @@ class _UserListScreenState extends State<UserListScreen> {
                               builder: (_) => UserFormScreen(user: user),
                              ),
                                 ).then((value) {
-  // Si se hizo una modificación, recargar usuarios
                               if (value == true) {
                                 context.read<UserBloc>().loadUsers();
                                 }
