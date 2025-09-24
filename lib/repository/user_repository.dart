@@ -31,7 +31,9 @@ class UserRepository {
           final List<dynamic> data = decoded['data'];
           return data.map((item) => UserModel.fromJson(item)).toList();
         } else {
-          _errorController.add("Respuesta inválida: campo 'data' no encontrado o incorrecto.");
+          _errorController.add(
+            "Respuesta inválida: campo 'data' no encontrado o incorrecto.",
+          );
         }
       } else {
         _errorController.add(
@@ -57,7 +59,9 @@ class UserRepository {
         if (decoded.containsKey('data')) {
           return UserModel.fromJson(decoded['data']);
         } else {
-          _errorController.add("Respuesta inválida: campo 'data' no encontrado.");
+          _errorController.add(
+            "Respuesta inválida: campo 'data' no encontrado.",
+          );
         }
       } else {
         _errorController.add(
@@ -84,7 +88,9 @@ class UserRepository {
         if (decoded.containsKey('data')) {
           return UserModel.fromJson(decoded['data']);
         } else {
-          _errorController.add("Respuesta inválida: campo 'data' no encontrado.");
+          _errorController.add(
+            "Respuesta inválida: campo 'data' no encontrado.",
+          );
         }
       } else {
         _errorController.add(
@@ -101,7 +107,9 @@ class UserRepository {
   Future<UserModel?> updateUser(UserModel user) async {
     try {
       final response = await http.put(
-        Uri.parse("${Constants.urlAuthority}/${Constants.userAPIUpdate}/${user.id}"),
+        Uri.parse(
+          "${Constants.urlAuthority}/${Constants.userAPIUpdate}/${user.id}",
+        ),
         headers: getHeaders(),
         body: jsonEncode(user.toJson()),
       );
@@ -111,7 +119,9 @@ class UserRepository {
         if (decoded.containsKey('data')) {
           return UserModel.fromJson(decoded['data']);
         } else {
-          _errorController.add("Respuesta inválida: campo 'data' no encontrado.");
+          _errorController.add(
+            "Respuesta inválida: campo 'data' no encontrado.",
+          );
         }
       } else {
         _errorController.add(
