@@ -12,6 +12,9 @@ class UserListScreen extends StatefulWidget {
 }
 
 class _UserListScreenState extends State<UserListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  UserModel? _usuarioFiltrado;
+
   @override
   void initState() {
     super.initState();
@@ -24,6 +27,33 @@ class _UserListScreenState extends State<UserListScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 5)),
     );
+  }
+
+  void buscarPorId() async {
+    final id = _searchController.text.trim();
+
+    if (id.isEmpty) {
+      setState(() {
+        _usuarioFiltrado = null;
+      });
+      context.read<UserBloc>().loadUsers();
+      return;
+    }
+
+    final user = await context.read<UserBloc>().buscarUsuarioPorId(id);
+
+    if (user == null) {
+      showSnackBar("No se encontró ningún usuario con ID $id");
+      setState(() {
+        _usuarioFiltrado = null;
+      });
+    } else {
+      setState(() {
+        _usuarioFiltrado = user;
+      });
+
+      showSnackBar("Usuario encontrado: ${user.firstName} ${user.lastName}");
+    }
   }
 
   void mostrarDetalleUsuario(BuildContext context, UserModel user) {
@@ -85,89 +115,197 @@ class _UserListScreenState extends State<UserListScreen> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: StreamBuilder<List<UserModel>>(
-              stream: context.read<UserBloc>().userListStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(child: Text("Error cargando usuarios"));
-                } else if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No se encontraron usuarios"));
-                }
-
-                final users = snapshot.data!;
-                return ListView.separated(
-                  itemCount: users.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final user = users[index];
-                    return ListTile(
-                      onTap: () => mostrarDetalleUsuario(context, user),
-
-                      title: Text("${user.firstName} ${user.lastName}"),
-                      subtitle: Text(user.email),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                              MaterialPageRoute(
-                              builder: (_) => UserFormScreen(user: user),
-                             ),
-                                ).then((value) {
-                              if (value == true) {
-                                context.read<UserBloc>().loadUsers();
-                                }
-                                  });
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () async {
-                              final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text("Eliminar usuario"),
-                                  content: const Text(
-                                      "¿Estás seguro de que deseas eliminar este usuario?"),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text("Cancelar"),
-                                      onPressed: () =>
-                                          Navigator.pop(context, false),
-                                    ),
-                                    TextButton(
-                                      child: const Text("Eliminar"),
-                                      onPressed: () =>
-                                          Navigator.pop(context, true),
-                                    ),
-                                  ],
-                                ),
-                              );
-
-                              if (confirm == true) {
-                                context
-                                    .read<UserBloc>()
-                                    .deleteUser(user.id.toString())
-                                    .then((_) => showSnackBar("Usuario eliminado"))
-                                    .catchError((e) =>
-                                        showSnackBar("Error al eliminar usuario"));
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      labelText: 'Buscar por ID',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: buscarPorId,
+                  child: const Text('Buscar'),
+                ),
+              ],
             ),
+          ),
+          Expanded(
+            child: _usuarioFiltrado != null
+                ? ListView(
+                    children: [
+                      ListTile(
+                        onTap: () =>
+                            mostrarDetalleUsuario(context, _usuarioFiltrado!),
+                        title: Text(
+                          "${_usuarioFiltrado!.firstName} ${_usuarioFiltrado!.lastName}",
+                        ),
+                        subtitle: Text(_usuarioFiltrado!.email),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        UserFormScreen(user: _usuarioFiltrado),
+                                  ),
+                                ).then((value) {
+                                  if (value == true) {
+                                    context.read<UserBloc>().loadUsers();
+                                  }
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text("Eliminar usuario"),
+                                    content: const Text(
+                                      "¿Estás seguro de que deseas eliminar este usuario?",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text("Cancelar"),
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                      ),
+                                      TextButton(
+                                        child: const Text("Eliminar"),
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                      ),
+                                    ],
+                                  ),
+                                );
+
+                                if (confirm == true) {
+                                  context
+                                      .read<UserBloc>()
+                                      .deleteUser(
+                                        _usuarioFiltrado!.id.toString(),
+                                      )
+                                      .then((_) {
+                                        showSnackBar("Usuario eliminado");
+                                        setState(() {
+                                          _usuarioFiltrado = null;
+                                        });
+                                        context.read<UserBloc>().loadUsers();
+                                      });
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : StreamBuilder<List<UserModel>>(
+                    stream: context.read<UserBloc>().userListStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text("Error cargando usuarios"),
+                        );
+                      } else if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.data!.isEmpty) {
+                        return const Center(
+                          child: Text("No se encontraron usuarios"),
+                        );
+                      }
+
+                      final users = snapshot.data!;
+                      return ListView.separated(
+                        itemCount: users.length,
+                        separatorBuilder: (context, index) =>
+                            const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final user = users[index];
+                          return ListTile(
+                            onTap: () => mostrarDetalleUsuario(context, user),
+                            title: Text("${user.firstName} ${user.lastName}"),
+                            subtitle: Text(user.email),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            UserFormScreen(user: user),
+                                      ),
+                                    ).then((value) {
+                                      if (value == true) {
+                                        context.read<UserBloc>().loadUsers();
+                                      }
+                                    });
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text("Eliminar usuario"),
+                                        content: const Text(
+                                          "¿Estás seguro de que deseas eliminar este usuario?",
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("Cancelar"),
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                          ),
+                                          TextButton(
+                                            child: const Text("Eliminar"),
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (confirm == true) {
+                                      context
+                                          .read<UserBloc>()
+                                          .deleteUser(user.id.toString())
+                                          .then((_) {
+                                            showSnackBar("Usuario eliminado");
+                                          });
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),
