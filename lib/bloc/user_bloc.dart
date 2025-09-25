@@ -33,10 +33,14 @@ class UserBloc {
     }
   }
 
+  Future<UserModel?> buscarUsuarioPorId(String id) async {
+    return await _repository.getUserById(id);
+  }
+
   Future<void> createUser(UserModel user) async {
     final createdUser = await _repository.createUser(user);
     if (createdUser != null) {
-      await loadUsers(); 
+      await loadUsers();
       _messageController.sink.add("Usuario creado exitosamente");
     }
   }

@@ -43,16 +43,16 @@ class UserRepository {
     } catch (e) {
       _errorController.add("Error: $e");
     }
-
     return [];
   }
 
   Future<UserModel?> getUserById(String id) async {
     try {
-      final response = await http.get(
-        Uri.parse("${Constants.urlAuthority}/${Constants.userAPIGetById}/$id"),
-        headers: getHeaders(),
+      final url = Uri.parse(
+        "${Constants.urlAuthority}/${Constants.userAPIGetById}?id=$id",
       );
+
+      final response = await http.get(url, headers: getHeaders());
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -71,7 +71,6 @@ class UserRepository {
     } catch (e) {
       _errorController.add("Error: $e");
     }
-
     return null;
   }
 
@@ -100,7 +99,6 @@ class UserRepository {
     } catch (e) {
       _errorController.add("Error: $e");
     }
-
     return null;
   }
 
@@ -131,7 +129,6 @@ class UserRepository {
     } catch (e) {
       _errorController.add("Error: $e");
     }
-
     return null;
   }
 
