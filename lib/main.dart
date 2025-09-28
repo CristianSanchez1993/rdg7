@@ -13,8 +13,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Provider<UserBloc>(
+  Widget build(BuildContext context) => Provider<UserBloc>(
       create: (_) => UserBloc(),
       child: MaterialApp(
         title: 'RDG7 App',
@@ -26,5 +25,4 @@ class MyApp extends StatelessWidget {
         home: const UserListScreen(),
       ),
     );
-  }
 }
