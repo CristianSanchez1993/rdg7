@@ -33,27 +33,27 @@ class UserBloc {
     }
   }
 
+  Future<UserModel?> buscarUsuarioPorId(String id) async => await _repository.getUserById(id);
+
   Future<void> createUser(UserModel user) async {
-    final createdUser = await _repository.createUser(user);
-    if (createdUser != null) {
-      await loadUsers(); 
-      _messageController.sink.add("Usuario creado exitosamente");
-    }
-  }
+      await _repository.createUser(user);
+      await loadUsers();
+      _messageController.sink.add('Usuario creado exitosamente');
+ }
 
   Future<void> updateUser(UserModel user) async {
-    final updatedUser = await _repository.updateUser(user);
-    if (updatedUser != null) {
-      await loadUsers();
-      _messageController.sink.add("Usuario actualizado exitosamente");
-    }
+  final success = await _repository.updateUser(user);
+  if (success) {
+     await loadUsers();
+     _messageController.sink.add('Usuario actualizado exitosamente');
   }
+}
 
   Future<void> deleteUser(String id) async {
     final success = await _repository.deleteUser(id);
     if (success) {
       await loadUsers();
-      _messageController.sink.add("Usuario eliminado exitosamente");
+      _messageController.sink.add('Usuario eliminado exitosamente');
     }
   }
 

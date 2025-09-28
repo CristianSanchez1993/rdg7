@@ -42,7 +42,6 @@ class _UserFormScreenState extends State<UserFormScreen> {
     _lastNameController = TextEditingController(text: user?.lastName ?? '');
     _secondLastNameController = TextEditingController(text: user?.secondLastName ?? '');
     _phoneController = TextEditingController(text: user?.phone ?? '');
-
     _isActive = user?.isActive ?? true;
 
     _identificationController.addListener(validarFormulario);
@@ -103,23 +102,23 @@ class _UserFormScreenState extends State<UserFormScreen> {
         lastName: _lastNameController.text,
         secondLastName: _secondLastNameController.text,
         phone: _phoneController.text,
-        isActive: _isActive, 
+        isActive: _isActive,
       );
 
       try {
-        if (widget.user == null) {
-          await context.read<UserBloc>().createUser(newUser);
-          showSnackBar("Usuario creado exitosamente");
-        } else {
-          await context.read<UserBloc>().updateUser(newUser);
-          showSnackBar("Usuario actualizado exitosamente");
-        }
-
-        await Future.delayed(const Duration(seconds: 5));
-        Navigator.pop(context, true);
-      } catch (e) {
-        showSnackBar("Ocurrió un error");
+         if (widget.user == null) {
+         await context.read<UserBloc>().createUser(newUser);
+         showSnackBar('Usuario creado exitosamente');
+      } else {
+         await context.read<UserBloc>().updateUser(newUser);
+         showSnackBar('Usuario actualizado exitosamente');
       }
+
+        if (!mounted) return;
+        Navigator.pop(context, true);
+       } catch (e) {
+        showSnackBar('Ocurrió un error: $e');
+       }
     }
   }
 
@@ -127,15 +126,14 @@ class _UserFormScreenState extends State<UserFormScreen> {
     String label,
     TextEditingController controller, {
     bool obscure = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      validator: (value) =>
-          value == null || value.isEmpty ? "Este campo es obligatorio" : null,
-      decoration: InputDecoration(labelText: label),
-    );
-  }
+  }) =>
+      TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        validator: (value) =>
+            value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
+        decoration: InputDecoration(labelText: label),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -144,8 +142,12 @@ class _UserFormScreenState extends State<UserFormScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(isEditing ? "Editar Usuario" : "Crear Usuario"),
+        title: Text(isEditing ? 'Editar Usuario' : 'Crear Usuario'),
         backgroundColor: Colors.teal,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -153,14 +155,14 @@ class _UserFormScreenState extends State<UserFormScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              buildTextField("Identificación", _identificationController),
-              buildTextField("Contraseña", _passwordController, obscure: true),
-              buildTextField("Correo Electrónico", _emailController),
-              buildTextField("Primer Nombre", _firstNameController),
-              buildTextField("Segundo Nombre", _secondNameController),
-              buildTextField("Apellido", _lastNameController),
-              buildTextField("Segundo Apellido", _secondLastNameController),
-              buildTextField("Teléfono", _phoneController),
+              buildTextField('Identificación', _identificationController),
+              buildTextField('Contraseña', _passwordController, obscure: true),
+              buildTextField('Correo Electrónico', _emailController),
+              buildTextField('Primer Nombre', _firstNameController),
+              buildTextField('Segundo Nombre', _secondNameController),
+              buildTextField('Apellido', _lastNameController),
+              buildTextField('Segundo Apellido', _secondLastNameController),
+              buildTextField('Teléfono', _phoneController),
 
               const SizedBox(height: 20),
 
@@ -168,12 +170,12 @@ class _UserFormScreenState extends State<UserFormScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Estado del usuario:",
+                    'Estado del usuario:',
                     style: TextStyle(fontSize: 16),
                   ),
                   Row(
                     children: [
-                      Text(_isActive ? "Activo" : "Inactivo"),
+                      Text(_isActive ? 'Activo' : 'Inactivo'),
                       Switch(
                         value: _isActive,
                         onChanged: (value) {
@@ -181,7 +183,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
                             _isActive = value;
                           });
                         },
-                        activeColor: Colors.teal,
+                        activeThumbColor: Colors.teal,
                       ),
                     ],
                   ),
@@ -195,13 +197,14 @@ class _UserFormScreenState extends State<UserFormScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 child: Text(
-                  isEditing ? "Actualizar" : "Crear",
+                  isEditing ? 'Actualizar' : 'Crear',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
