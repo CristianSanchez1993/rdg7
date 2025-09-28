@@ -23,8 +23,7 @@ class UserModel {
     required this.isActive,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
       id: json['id'] as int,
       identification: json['identification'] as String,
       password: json['passwordHash'] as String,
@@ -36,10 +35,8 @@ class UserModel {
       phone: json['phone'] as String,
       isActive: json['isActive'] as bool,
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => {
       'id': id,
       'identification': identification,
       'password': password,
@@ -51,5 +48,4 @@ class UserModel {
       'phone': phone,
       'isActive': isActive,
     };
-  }
 }
