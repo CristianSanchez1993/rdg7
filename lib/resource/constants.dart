@@ -36,4 +36,10 @@ class Constants {
   static final String userAPICreate = '$contextPath/user/create';
   static final String userAPIUpdate = '$contextPath/user/update';
   static final String userAPIDelete = '$contextPath/user/delete';
+
+  static final String reservationAPIGetAll = '$contextPath/reservations';
+  static final String reservationAPIGetById = '$contextPath/reservations';
+  static final String reservationAPICreate = '$contextPath/reservations';
+  static final String reservationAPIUpdate = '$contextPath/reservations';
+  static final String reservationAPIDelete = '$contextPath/reservations';
 }
