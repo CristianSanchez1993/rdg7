@@ -34,13 +34,17 @@ class _UserFormScreenState extends State<UserFormScreen> {
     final user = widget.user;
 
     _idController = TextEditingController(text: user?.id.toString() ?? '');
-    _identificationController = TextEditingController(text: user?.identification ?? '');
+    _identificationController = TextEditingController(
+      text: user?.identification ?? '',
+    );
     _passwordController = TextEditingController();
     _emailController = TextEditingController(text: user?.email ?? '');
     _firstNameController = TextEditingController(text: user?.firstName ?? '');
     _secondNameController = TextEditingController(text: user?.secondName ?? '');
     _lastNameController = TextEditingController(text: user?.lastName ?? '');
-    _secondLastNameController = TextEditingController(text: user?.secondLastName ?? '');
+    _secondLastNameController = TextEditingController(
+      text: user?.secondLastName ?? '',
+    );
     _phoneController = TextEditingController(text: user?.phone ?? '');
     _isActive = user?.isActive ?? true;
 
@@ -56,7 +60,8 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
   void validarFormulario() {
     setState(() {
-      _formularioValido = _identificationController.text.isNotEmpty &&
+      _formularioValido =
+          _identificationController.text.isNotEmpty &&
           _passwordController.text.isNotEmpty &&
           _emailController.text.isNotEmpty &&
           _firstNameController.text.isNotEmpty &&
@@ -83,10 +88,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 5),
-      ),
+      SnackBar(content: Text(message), duration: const Duration(seconds: 5)),
     );
   }
 
@@ -106,19 +108,19 @@ class _UserFormScreenState extends State<UserFormScreen> {
       );
 
       try {
-         if (widget.user == null) {
-         await context.read<UserBloc>().createUser(newUser);
-         showSnackBar('Usuario creado exitosamente');
-      } else {
-         await context.read<UserBloc>().updateUser(newUser);
-         showSnackBar('Usuario actualizado exitosamente');
-      }
+        if (widget.user == null) {
+          await context.read<UserBloc>().createUser(newUser);
+          showSnackBar('Usuario creado exitosamente');
+        } else {
+          await context.read<UserBloc>().updateUser(newUser);
+          showSnackBar('Usuario actualizado exitosamente');
+        }
 
         if (!mounted) return;
         Navigator.pop(context, true);
-       } catch (e) {
+      } catch (e) {
         showSnackBar('Ocurrió un error: $e');
-       }
+      }
     }
   }
 
@@ -126,14 +128,13 @@ class _UserFormScreenState extends State<UserFormScreen> {
     String label,
     TextEditingController controller, {
     bool obscure = false,
-  }) =>
-      TextFormField(
-        controller: controller,
-        obscureText: obscure,
-        validator: (value) =>
-            value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
-        decoration: InputDecoration(labelText: label),
-      );
+  }) => TextFormField(
+    controller: controller,
+    obscureText: obscure,
+    validator: (value) =>
+        value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
+    decoration: InputDecoration(labelText: label),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +144,6 @@ class _UserFormScreenState extends State<UserFormScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(isEditing ? 'Editar Usuario' : 'Crear Usuario'),
-        backgroundColor: Colors.teal,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -194,14 +194,26 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
               ElevatedButton(
                 onPressed: _formularioValido ? saveUser : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                style: ButtonStyle(
+                  padding: WidgetStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   ),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                    states,
+                  ) {
+                    if (states.contains(WidgetState.disabled)) {
+                      return Colors.blue.withValues(
+                        alpha: 0.4,
+                      );
+                    }
+                    return Colors.blue;
+                  }),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
                 ),
                 child: Text(
                   isEditing ? 'Actualizar' : 'Crear',
