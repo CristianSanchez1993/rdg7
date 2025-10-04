@@ -107,7 +107,6 @@ class _UserListScreenState extends State<UserListScreen> {
         appBar: AppBar(
           centerTitle: true,
           title: const Text('Lista de usuarios'),
-          backgroundColor: Colors.teal,
         ),
         body: Column(
           children: [
@@ -314,7 +313,6 @@ class _UserListScreenState extends State<UserListScreen> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.teal,
           child: const Icon(Icons.add),
           onPressed: () async {
   
