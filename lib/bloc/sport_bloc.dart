@@ -17,7 +17,6 @@ class SportBloc {
 
   SportBloc() {
     _repository.errorStream.listen((error) {
-      // Asegura que el tipo sea String
       _messageController.sink.add(error.toString());
     });
   }
@@ -48,10 +47,13 @@ class SportBloc {
     }
   }
 
-  // No hay endpoint DELETE para sports: dejamos un stub amigable
   Future<bool> deleteSport(int id) async {
-    _messageController.sink.add('Eliminar deporte no está disponible en el backend.');
-    return false;
+    final ok = await _repository.deleteSport(id);
+    if (ok) {
+      await loadSports();
+      _messageController.sink.add('Deporte eliminado exitosamente');
+    }
+    return ok;
   }
 
   void dispose() {

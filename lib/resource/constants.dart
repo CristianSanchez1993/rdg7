@@ -44,17 +44,17 @@ class Constants {
   static final String reservationAPIUpdate = '$contextPath/reservations';
   static final String reservationAPIDelete = '$contextPath/reservations';
 
-  // Courts (según tu CourtController)
+  // Courts (según CourtController)
   static final String courtAPIGetAll  = '$contextPath/court/get-all';
   static final String courtAPIGetById = '$contextPath/court/get-by-id';
   static final String courtAPICreate  = '$contextPath/court/create';
   static final String courtAPIUpdate  = '$contextPath/court/update-by-id';
-  static final String courtAPIDelete  = ''; // no existe en backend
+  static final String courtAPIDelete  = '$contextPath/court/delete-by-id';
 
-  // Sports (según tu SportController)
+  // Sports (según SportController)
   static final String sportAPIGetAll  = '$contextPath/sport/get-all';
   static final String sportAPIGetById = '$contextPath/sport/get-by-id';
   static final String sportAPICreate  = '$contextPath/sport/create';
   static final String sportAPIUpdate  = '$contextPath/sport/update-by-id';
-  static final String sportAPIDelete  = ''; // no existe en backend
+  static final String sportAPIDelete  = '$contextPath/sport/delete-by-id';
 }

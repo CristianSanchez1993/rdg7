@@ -87,7 +87,8 @@ class SportRepository {
         }
         throw Exception("Respuesta inválida: falta 'data'.");
       }
-      throw Exception('Error creando deporte: ${response.statusCode} ${response.body}');
+      throw Exception(
+          'Error creando deporte: ${response.statusCode} ${response.body}');
     } catch (e) {
       _errorController.add('Error al crear deporte: $e');
       rethrow;
@@ -107,9 +108,39 @@ class SportRepository {
         final decoded = jsonDecode(response.body);
         return decoded is Map<String, dynamic> && decoded['success'] == true;
       }
-      throw Exception('Error actualizando deporte: ${response.statusCode} ${response.body}');
+      throw Exception(
+          'Error actualizando deporte: ${response.statusCode} ${response.body}');
     } catch (e) {
       _errorController.add('Error al actualizar deporte: $e');
+      return false;
+    }
+  }
+
+  // DELETE /delete-by-id/{id}
+  Future<bool> deleteSport(int id) async {
+    try {
+      final response = await httpClient.delete(
+        Uri.parse('${Constants.urlAuthority}/${Constants.sportAPIDelete}/$id'),
+        headers: getHeaders(),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        if (response.body.isEmpty) return true;
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map<String, dynamic>) {
+          // ApiResponse estándar: {success, message, data}
+          if (decoded['success'] == true) return true;
+        }
+        // Si el backend retorna 200 pero otro formato, igualmente consideramos éxito.
+        return true;
+      } else {
+        _errorController.add(
+          'Error ${response.statusCode}: ${response.reasonPhrase}\n${response.body}',
+        );
+        return false;
+      }
+    } catch (e) {
+      _errorController.add('Error al eliminar deporte: $e');
       return false;
     }
   }

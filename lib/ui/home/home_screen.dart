@@ -4,6 +4,7 @@ import 'package:rdg7/ui/reservation/reservation_list_screen.dart';
 import 'package:rdg7/ui/user/user_list_screen.dart';
 import 'package:rdg7/ui/court/court_list_screen.dart';
 import 'package:rdg7/ui/sport/sport_list_screen.dart';
+import 'package:rdg7/ui/support/support_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -39,7 +40,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-
               _buildMenuButton(
                 context,
                 title: 'Ingresar Cancha',
@@ -47,12 +47,11 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => Navigator.push<void>(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) => const CourtListScreen(),
+                    builder: (_) => const CourtListScreen(),
                   ),
                 ),
               ),
-
-                const SizedBox(height: 15),
+              const SizedBox(height: 15),
               _buildMenuButton(
                 context,
                 title: 'Ingresar Deporte',
@@ -60,19 +59,20 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => Navigator.push<void>(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) => const SportListScreen(),
+                    builder: (_) => const SportListScreen(),
                   ),
                 ),
               ),
-
               const SizedBox(height: 15),
+              // ---- Soporte navega a la pantalla nueva ----
               _buildMenuButton(
                 context,
                 title: 'Soporte',
                 icon: Icons.support_agent,
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Módulo de soporte no implementado aún'),
+                onTap: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) => const SupportScreen(),
                   ),
                 ),
               ),
@@ -106,10 +106,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         icon: Icon(icon, size: 28),
-        label: Text(
-          title,
-          style: const TextStyle(fontSize: 18),
-        ),
+        label: Text(title, style: const TextStyle(fontSize: 18)),
         onPressed: onTap,
       );
 }
