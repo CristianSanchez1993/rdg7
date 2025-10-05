@@ -26,20 +26,35 @@ class Constants {
   }
 
   static http.Client httpClient = http.Client();
-
   static void overrideHttpClient(http.Client client) {
     httpClient = client;
   }
 
+  // Users
   static final String userAPIGetAll = '$contextPath/user/all';
   static final String userAPIGetById = '$contextPath/user';
   static final String userAPICreate = '$contextPath/user/create';
   static final String userAPIUpdate = '$contextPath/user/update';
   static final String userAPIDelete = '$contextPath/user/delete';
 
+  // Reservations
   static final String reservationAPIGetAll = '$contextPath/reservations';
   static final String reservationAPIGetById = '$contextPath/reservations';
   static final String reservationAPICreate = '$contextPath/reservations';
   static final String reservationAPIUpdate = '$contextPath/reservations';
   static final String reservationAPIDelete = '$contextPath/reservations';
+
+  // Courts (según tu CourtController)
+  static final String courtAPIGetAll  = '$contextPath/court/get-all';
+  static final String courtAPIGetById = '$contextPath/court/get-by-id';
+  static final String courtAPICreate  = '$contextPath/court/create';
+  static final String courtAPIUpdate  = '$contextPath/court/update-by-id';
+  static final String courtAPIDelete  = ''; // no existe en backend
+
+  // Sports (según tu SportController)
+  static final String sportAPIGetAll  = '$contextPath/sport/get-all';
+  static final String sportAPIGetById = '$contextPath/sport/get-by-id';
+  static final String sportAPICreate  = '$contextPath/sport/create';
+  static final String sportAPIUpdate  = '$contextPath/sport/update-by-id';
+  static final String sportAPIDelete  = ''; // no existe en backend
 }
