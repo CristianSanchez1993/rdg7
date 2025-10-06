@@ -38,11 +38,11 @@ class Constants {
   static final String userAPIDelete = '$contextPath/user/delete';
 
   // Reservations
-  static final String reservationAPIGetAll = '$contextPath/reservations';
-  static final String reservationAPIGetById = '$contextPath/reservations';
-  static final String reservationAPICreate = '$contextPath/reservations';
-  static final String reservationAPIUpdate = '$contextPath/reservations';
-  static final String reservationAPIDelete = '$contextPath/reservations';
+  static final String reservationAPIGetAll   = '$contextPath/reservation/get-all';
+  static final String reservationAPIGetById  = '$contextPath/reservation/get-by-id';
+  static final String reservationAPICreate   = '$contextPath/reservation/create';
+  static final String reservationAPIUpdate   = '$contextPath/reservation/update-by-id';
+  static final String reservationAPIDelete   = '$contextPath/reservation/delete-by-id';
 
   // Courts (según CourtController)
   static final String courtAPIGetAll  = '$contextPath/court/get-all';

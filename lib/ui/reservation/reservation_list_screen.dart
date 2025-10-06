@@ -20,111 +20,107 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     );
   }
 
-  void showSnackBar(String message) {
+  void _showSnackBar(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
     );
   }
 
+  Future<void> _confirmDelete(BuildContext context, ReservationModel r) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar reserva'),
+        content: const Text('¿Estás seguro de eliminar esta reserva?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await context.read<ReservationBloc>().deleteReservation(r.id.toString());
+        _showSnackBar('Reserva eliminada');
+      } catch (e) {
+        _showSnackBar('Error al eliminar la reserva');
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Lista de Reservas')),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<List<ReservationModel>>(
-                stream: context.read<ReservationBloc>().reservationListStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Center(child: Text('Error cargando reservas'));
-                  } else if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No hay reservas'));
-                  }
+  Widget build(BuildContext context) {
+    final bloc = context.watch<ReservationBloc>();
 
-                  final reservations = snapshot.data!;
-                  return ListView.separated(
-                    itemCount: reservations.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final r = reservations[index];
-                      return ListTile(
-                        title: Text(
-                          'Cancha: ${r.courtId} | Usuario: ${r.userId}',
-                        ),
-                        subtitle: Text(
-                          'Inicio: ${r.startAt} - Fin: ${r.endAt}\n'
-                          'Estado: ${r.statusCode}'
-                          '${r.notes != null && r.notes!.isNotEmpty ? '\nNotas: ${r.notes}' : ''}', 
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () async {
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Eliminar reserva'),
-                                content: const Text(
-                                  '¿Estás seguro de que deseas eliminar esta reserva?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('Cancelar'),
-                                    onPressed: () =>
-                                        Navigator.pop(context, false),
-                                  ),
-                                  TextButton(
-                                    child: const Text('Eliminar'),
-                                    onPressed: () =>
-                                        Navigator.pop(context, true),
-                                  ),
-                                ],
-                              ),
-                            );
+    return Scaffold(
+      appBar: AppBar(title: const Text('Lista de Reservas')),
+      body: StreamBuilder<List<ReservationModel>>(
+        stream: bloc.reservationListStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error cargando reservas'));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final reservations = snapshot.data!;
+          if (reservations.isEmpty) {
+            return const Center(child: Text('No hay reservas registradas'));
+          }
 
-                            if (confirm == true) {
-                              try {
-                                await context
-                                    .read<ReservationBloc>()
-                                    .deleteReservation(r.id.toString());
-                                if (!mounted) return;
-                                showSnackBar('Reserva eliminada');
-                              } catch (e) {
-                                if (!mounted) return;
-                                showSnackBar('Error al eliminar reserva');
-                              }
-                            }
-                          },
-                        ),
-                        onTap: () {
-                          //  Abrir en modo edición
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  ReservationFormScreen(reservation: r),
-                            ),
-                          );
-                        },
-                      );
-                    },
+          return ListView.separated(
+            itemCount: reservations.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final r = reservations[index];
+              return ListTile(
+                title: Text(
+                  'Cancha: ${r.courtId} | Usuario: ${r.userId}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Inicio: ${r.startAt}\n'
+                  'Fin: ${r.endAt}\n'
+                  'Estado: ${r.statusCode}'
+                  '${r.notes != null && r.notes!.isNotEmpty ? '\nNotas: ${r.notes}' : ''}',
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _confirmDelete(context, r),
+                ),
+                onTap: () async {
+                  // Navega al form en modo edición y recarga al volver
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReservationFormScreen(reservation: r),
+                    ),
                   );
+                  if (mounted) bloc.loadReservations();
                 },
-              ),
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (_) => const ReservationFormScreen(),
-              ),
-            );
-          },
-        ),
-      );
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ReservationFormScreen()),
+          );
+          if (mounted) bloc.loadReservations();
+        },
+      ),
+    );
+  }
 }
