@@ -30,28 +30,24 @@ class Constants {
     httpClient = client;
   }
 
-  // Users
   static final String userAPIGetAll = '$contextPath/user/all';
   static final String userAPIGetById = '$contextPath/user';
   static final String userAPICreate = '$contextPath/user/create';
   static final String userAPIUpdate = '$contextPath/user/update';
   static final String userAPIDelete = '$contextPath/user/delete';
 
-  // Reservations
   static final String reservationAPIGetAll   = '$contextPath/reservation/get-all';
   static final String reservationAPIGetById  = '$contextPath/reservation/get-by-id';
   static final String reservationAPICreate   = '$contextPath/reservation/create';
   static final String reservationAPIUpdate   = '$contextPath/reservation/update-by-id';
   static final String reservationAPIDelete   = '$contextPath/reservation/delete-by-id';
 
-  // Courts (según CourtController)
   static final String courtAPIGetAll  = '$contextPath/court/get-all';
   static final String courtAPIGetById = '$contextPath/court/get-by-id';
   static final String courtAPICreate  = '$contextPath/court/create';
   static final String courtAPIUpdate  = '$contextPath/court/update-by-id';
   static final String courtAPIDelete  = '$contextPath/court/delete-by-id';
 
-  // Sports (según SportController)
   static final String sportAPIGetAll  = '$contextPath/sport/get-all';
   static final String sportAPIGetById = '$contextPath/sport/get-by-id';
   static final String sportAPICreate  = '$contextPath/sport/create';

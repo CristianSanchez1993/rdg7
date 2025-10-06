@@ -18,13 +18,12 @@ class ReservationModel {
   });
 
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
-    // Asegurar que los sub-objetos son Map<String, dynamic>
+    
     final Map<String, dynamic> userDTO =
         (json['userDTO'] as Map?)?.cast<String, dynamic>() ?? {};
     final Map<String, dynamic> courtDTO =
         (json['courtDTO'] as Map?)?.cast<String, dynamic>() ?? {};
 
-    // Detectar ambos formatos (DTO y plano)
     final int userId = _toInt(userDTO['id'] ?? json['user_id']);
     final int courtId = _toInt(courtDTO['id'] ?? json['court_id']);
 
@@ -43,7 +42,6 @@ class ReservationModel {
     );
   }
 
-  /// Convierte objeto Dart a JSON para enviar al backend
   Map<String, dynamic> toJson() => {
     'id': id,
     'courtDTO': {'id': courtId},
@@ -54,7 +52,6 @@ class ReservationModel {
     'notes': notes,
   };
 
-  /// Helper para parsear int seguro
   static int _toInt(dynamic value) {
     if (value == null) return 0;
     if (value is int) return value;
@@ -62,7 +59,6 @@ class ReservationModel {
     return 0;
   }
 
-  /// Helper para parsear fecha segura
   static DateTime _toDate(dynamic value, {DateTime? fallback}) {
     if (value == null) return fallback ?? DateTime.now();
     if (value is DateTime) return value;

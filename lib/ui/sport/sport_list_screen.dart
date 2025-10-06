@@ -132,7 +132,7 @@ class _SportListScreenState extends State<SportListScreen> {
             child: TextField(
               controller: _searchCtrl,
               onChanged: (v) =>
-                  setState(() => _query = v.trim().toLowerCase()), // <- FIX
+                  setState(() => _query = v.trim().toLowerCase()),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: 'Buscar por nombre…',
@@ -218,12 +218,12 @@ class _SportListScreenState extends State<SportListScreen> {
                       children: [
                         IconButton(
                           tooltip: 'Editar',
-                          icon: const Icon(Icons.edit, color: Colors.blue), // <- color original
+                          icon: const Icon(Icons.edit, color: Colors.blue), 
                           onPressed: () => _navigateToForm(sport: sport),
                         ),
                         IconButton(
                           tooltip: 'Eliminar',
-                          icon: const Icon(Icons.delete, color: Colors.red), // <- color original
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () => _confirmAndDelete(sport),
                         ),
                       ],

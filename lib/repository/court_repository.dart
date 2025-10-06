@@ -49,7 +49,6 @@ class CourtRepository {
     return [];
   }
 
-  // GET /get-by-id/{id}
   Future<CourtModel?> getCourtById(int id) async {
     try {
       final url = Uri.parse('${Constants.urlAuthority}/${Constants.courtAPIGetById}/$id');
@@ -77,7 +76,6 @@ class CourtRepository {
     return null;
   }
 
-  // POST /create
   Future<CourtModel> createCourt(CourtModel court) async {
     try {
       final url = Uri.parse('${Constants.urlAuthority}/${Constants.courtAPICreate}');
@@ -99,7 +97,6 @@ class CourtRepository {
         if (decoded is Map<String, dynamic> && decoded['data'] is Map) {
           return CourtModel.fromJson(decoded['data'] as Map<String, dynamic>);
         } else {
-          // Algunos backends devuelven el mismo DTO enviado (sin id). Lo toleramos:
           return court;
         }
       }
@@ -110,7 +107,6 @@ class CourtRepository {
     }
   }
 
-  // PUT /update-by-id (id va en el body)
   Future<bool> updateCourt(CourtModel court) async {
     try {
       final url = Uri.parse('${Constants.urlAuthority}/${Constants.courtAPIUpdate}');
@@ -139,7 +135,6 @@ class CourtRepository {
     }
   }
 
-  // Soft delete (no delete real)
   Future<bool> softDeleteCourt(int id) async {
     try {
       final current = await getCourtById(id);

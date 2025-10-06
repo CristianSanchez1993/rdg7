@@ -23,11 +23,9 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
   String _statusCode = 'PENDING';
   String? _notes;
 
-  // Listas cargadas desde backend
   List<UserModel> _users = [];
   List<CourtModel> _courts = [];
 
-  // Valores seleccionados
   String? _selectedUserId;
   String? _selectedCourtId;
 
@@ -37,7 +35,6 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
   void initState() {
     super.initState();
 
-    // Si estamos editando una reserva
     if (widget.reservation != null) {
       final r = widget.reservation!;
       _selectedCourtId = r.courtId.toString();
@@ -156,9 +153,9 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                /// === SELECCIONAR CANCHA ===
+              
                 DropdownButtonFormField<String>(
-                  value: _courts.any((c) => c.id.toString() == _selectedCourtId)
+                  initialValue: _courts.any((c) => c.id.toString() == _selectedCourtId)
                       ? _selectedCourtId
                       : null,
                   hint: const Text('Selecciona una cancha'),
@@ -177,9 +174,8 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
 
                 const SizedBox(height: 16),
 
-                /// === SELECCIONAR USUARIO ===
                 DropdownButtonFormField<String>(
-                  value: _users.any((u) => u.id.toString() == _selectedUserId)
+                  initialValue: _users.any((u) => u.id.toString() == _selectedUserId)
                       ? _selectedUserId
                       : null,
                   hint: const Text('Selecciona un usuario'),
@@ -198,7 +194,6 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
 
                 const SizedBox(height: 16),
 
-                /// === FECHA INICIO ===
                 Row(
                   children: [
                     Expanded(
@@ -215,7 +210,6 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
                   ],
                 ),
 
-                /// === FECHA FIN ===
                 Row(
                   children: [
                     Expanded(
@@ -234,9 +228,8 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
 
                 const SizedBox(height: 16),
 
-                /// === ESTADO ===
                 DropdownButtonFormField<String>(
-                  value: _statusCode,
+                  initialValue: _statusCode,
                   decoration: const InputDecoration(labelText: 'Estado'),
                   items: const [
                     DropdownMenuItem(value: 'PENDING', child: Text('Pendiente')),
@@ -250,7 +243,6 @@ class _ReservationFormScreenState extends State<ReservationFormScreen> {
 
                 const SizedBox(height: 16),
 
-                /// === NOTAS ===
                 TextFormField(
                   initialValue: _notes,
                   maxLines: 4,

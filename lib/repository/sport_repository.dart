@@ -46,7 +46,6 @@ class SportRepository {
     return [];
   }
 
-  // GET por PATH: /get-by-id/{id}
   Future<SportModel?> getSportById(int id) async {
     try {
       final url = Uri.parse(
@@ -95,7 +94,6 @@ class SportRepository {
     }
   }
 
-  // PUT /update-by-id (id en el body)
   Future<bool> updateSport(SportModel sport) async {
     try {
       final response = await httpClient.put(
@@ -116,7 +114,6 @@ class SportRepository {
     }
   }
 
-  // DELETE /delete-by-id/{id}
   Future<bool> deleteSport(int id) async {
     try {
       final response = await httpClient.delete(
@@ -128,10 +125,10 @@ class SportRepository {
         if (response.body.isEmpty) return true;
         final decoded = jsonDecode(response.body);
         if (decoded is Map<String, dynamic>) {
-          // ApiResponse estándar: {success, message, data}
+          
           if (decoded['success'] == true) return true;
         }
-        // Si el backend retorna 200 pero otro formato, igualmente consideramos éxito.
+        
         return true;
       } else {
         _errorController.add(
