@@ -71,9 +71,9 @@ class _UserFormScreenState extends State<UserFormScreen> {
           _passwordController.text.isNotEmpty &&
           _emailController.text.isNotEmpty &&
           _firstNameController.text.isNotEmpty &&
-          _secondNameController.text.isNotEmpty &&
+          // _secondNameController.text.isNotEmpty (opcional)
           _lastNameController.text.isNotEmpty &&
-          _secondLastNameController.text.isNotEmpty &&
+          // _secondLastNameController.text.isNotEmpty (opcional)
           _phoneController.text.isNotEmpty;
     });
   }
@@ -135,14 +135,19 @@ class _UserFormScreenState extends State<UserFormScreen> {
     String label,
     TextEditingController controller, {
     bool obscure = false,
+    bool obligatorio = true,
   }) {
     final scheme = Theme.of(context).colorScheme;
 
     return TextFormField(
       controller: controller,
       obscureText: obscure,
-      validator: (value) =>
-          value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
+      validator: (value) {
+        if (obligatorio && (value == null || value.isEmpty)) {
+          return 'Este campo es obligatorio';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: label,
         labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -272,15 +277,17 @@ class _UserFormScreenState extends State<UserFormScreen> {
                               ),
                               const SizedBox(height: 12),
                               buildTextField(
-                                'Segundo Nombre',
+                                'Segundo Nombre (opcional)',
                                 _secondNameController,
+                                obligatorio: false,
                               ),
                               const SizedBox(height: 12),
                               buildTextField('Apellido', _lastNameController),
                               const SizedBox(height: 12),
                               buildTextField(
-                                'Segundo Apellido',
+                                'Segundo Apellido (opcional)',
                                 _secondLastNameController,
+                                obligatorio: false,
                               ),
                               const SizedBox(height: 12),
                               buildTextField('Teléfono', _phoneController),
