@@ -8,7 +8,7 @@ class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
   Future<void> _launchTel(BuildContext context, String phone) async {
-    // Capturamos el messenger ANTES del primer await
+    
     final messenger = ScaffoldMessenger.of(context);
     final uri = Uri(scheme: 'tel', path: phone);
 
@@ -18,7 +18,6 @@ class SupportScreen extends StatelessWidget {
       if (launched) return;
     }
 
-    // Fallback para emuladores: copiar y avisar
     await Clipboard.setData(ClipboardData(text: phone));
     messenger.showSnackBar(
       const SnackBar(content: Text('No hay app de teléfono. Número copiado.')),
@@ -39,14 +38,12 @@ class SupportScreen extends StatelessWidget {
       if (launched) return;
     }
 
-    // Fallback para emuladores: copiar y avisar
     await Clipboard.setData(ClipboardData(text: email));
     messenger.showSnackBar(
       const SnackBar(content: Text('No hay app de correo. Correo copiado.')),
     );
   }
 
-  // Botones responsivos: en pantallas angostas se apilan, en anchas van en fila.
   Widget _actionButtons(BuildContext context, String phone, String email) {
     final callBtn = FilledButton.icon(
       onPressed: () => _launchTel(context, phone),
@@ -62,7 +59,7 @@ class SupportScreen extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isNarrow = constraints.maxWidth < 360; // umbral
+        final isNarrow = constraints.maxWidth < 360;
         if (isNarrow) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -140,7 +137,7 @@ class SupportScreen extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.06), // reemplazo de withOpacity
+                        color: Colors.blue.withValues(alpha: 0.06), 
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.blue.withValues(alpha: 0.18)),
                       ),

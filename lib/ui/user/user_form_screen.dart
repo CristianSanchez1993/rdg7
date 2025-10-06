@@ -6,7 +6,7 @@ import 'package:rdg7/model/user_model.dart';
 const kCardBorderBlue = Color(0xFF3B82F6);
 const kCardShadowBlue = Color(0xFF1E3A8A);
 const kGradBlueEnd = Color(0xFF2563EB);
-const kGradBlueStart = Color(0xFF60A5FA); // blue-400
+const kGradBlueStart = Color(0xFF60A5FA);
 
 class UserFormScreen extends StatefulWidget {
   final UserModel? user;
@@ -201,8 +201,8 @@ class _UserFormScreenState extends State<UserFormScreen> {
         ),
         child: SafeArea(
           child: Scrollbar(
-            controller: _scrollCtrl, // <- mantenemos tu ScrollController
-            thumbVisibility: true, // <- barra visible a la derecha
+            controller: _scrollCtrl,
+            thumbVisibility: true, 
             child: SingleChildScrollView(
               controller: _scrollCtrl,
               padding: const EdgeInsets.all(16),
@@ -229,7 +229,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: const BorderSide(
-                            color: kCardBorderBlue, // borde azul
+                            color: kCardBorderBlue,
                             width: 1.4,
                           ),
                         ),
@@ -250,7 +250,6 @@ class _UserFormScreenState extends State<UserFormScreen> {
                               const Divider(height: 1),
                               const SizedBox(height: 16),
 
-                              // --- Campos ---
                               buildTextField(
                                 'Identificación',
                                 _identificationController,
@@ -288,7 +287,6 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
                               const SizedBox(height: 20),
 
-                              // --- Estado ---
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -313,7 +311,6 @@ class _UserFormScreenState extends State<UserFormScreen> {
 
                               const SizedBox(height: 20),
 
-                              // --- Botón ---
                               GradientButtonWide(
                                 label: widget.user != null
                                     ? 'Actualizar'

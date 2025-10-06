@@ -28,33 +28,35 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   }
 
   Future<void> _confirmDelete(BuildContext context, ReservationModel r) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar reserva'),
-        content: const Text('¿Estás seguro de eliminar esta reserva?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+  final bloc = context.read<ReservationBloc>(); 
 
-    if (confirm == true) {
-      try {
-        await context.read<ReservationBloc>().deleteReservation(r.id.toString());
-        _showSnackBar('Reserva eliminada');
-      } catch (e) {
-        _showSnackBar('Error al eliminar la reserva');
-      }
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Eliminar reserva'),
+      content: const Text('¿Estás seguro de eliminar esta reserva?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancelar'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm == true) {
+    try {
+      await bloc.deleteReservation(r.id.toString());
+      _showSnackBar('Reserva eliminada');
+    } catch (e) {
+      _showSnackBar('Error al eliminar la reserva');
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -97,14 +99,14 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                   onPressed: () => _confirmDelete(context, r),
                 ),
                 onTap: () async {
-                  // Navega al form en modo edición y recarga al volver
+                  
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    MaterialPageRoute<void>(
                       builder: (_) => ReservationFormScreen(reservation: r),
                     ),
                   );
-                  if (mounted) bloc.loadReservations();
+                  if (mounted) await bloc.loadReservations();
                 },
               );
             },
@@ -116,9 +118,9 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ReservationFormScreen()),
+            MaterialPageRoute<void>(builder: (_) => const ReservationFormScreen()),
           );
-          if (mounted) bloc.loadReservations();
+          if (mounted) await bloc.loadReservations();
         },
       ),
     );

@@ -72,7 +72,7 @@ class _SportFormScreenState extends State<SportFormScreen> {
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
             child: Column(
               children: [
-                // --- ÚNICAMENTE el formulario (sin recuadro superior) ---
+                
                 _FormCard(
                   formKey: _formKey,
                   nameController: _nameController,
@@ -151,7 +151,6 @@ class _FormCard extends StatelessWidget {
   final TextEditingController _nameController;
   final VoidCallback onSubmit;
 
-  // expression function body para evitar lint
   @override
   Widget build(BuildContext context) => Card(
         elevation: 8,

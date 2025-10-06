@@ -7,7 +7,7 @@ import 'package:rdg7/bloc/user_bloc.dart';
 import 'package:rdg7/bloc/reservation_bloc.dart';
 import 'package:rdg7/bloc/court_bloc.dart';
 import 'package:rdg7/bloc/sport_bloc.dart';
-import 'package:rdg7/bloc/support_bloc.dart'; // <- NUEVO
+import 'package:rdg7/bloc/support_bloc.dart';
 
 Future<void> main() async {
   await dotenv.load();
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             create: (_) => SportBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
-          // Provider para los datos de soporte
+          
           ChangeNotifierProvider<SupportBloc>(
             create: (_) => SupportBloc(),
           ),

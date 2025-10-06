@@ -50,7 +50,7 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
       final double? parsedPrice = double.tryParse(_priceController.text);
 
       final court = CourtModel(
-        id: widget.court?.id, // mantiene id si existe
+        id: widget.court?.id,
         name: _nameController.text.trim(),
         location: _locationController.text.trim(),
         sportId: parsedSportId,

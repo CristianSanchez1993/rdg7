@@ -1,5 +1,5 @@
 class SportModel {
-  final int? id; // puede venir null al crear (lo asigna el backend)
+  final int? id;
   final String name;
 
   SportModel({

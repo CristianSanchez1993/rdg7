@@ -64,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-              // ---- Soporte navega a la pantalla nueva ----
+              
               _buildMenuButton(
                 context,
                 title: 'Soporte',

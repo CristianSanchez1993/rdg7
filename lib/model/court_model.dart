@@ -16,14 +16,13 @@ class SportMini {
 }
 
 class CourtModel {
-  final int? id; // puede ser null al crear (backend asigna)
+  final int? id;
   final String name;
   final String location;
-  final SportMini? sportDTO; // el backend espera sportDTO
+  final SportMini? sportDTO;
   final double pricePerHour;
   final bool isActive;
 
-  /// Acepta sportDTO o sportId; serializa como sportDTO
   CourtModel({
     this.id,
     required this.name,
@@ -61,7 +60,7 @@ class CourtModel {
             : null;
 
     return CourtModel(
-      id: (json['id'] as num?)?.toInt(), // si backend no lo manda, queda null
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String? ?? '',
       location: json['location'] as String? ?? '',
       sportDTO: sport,
@@ -71,7 +70,7 @@ class CourtModel {
   }
 
   Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id, // importante para update-by-id
+        if (id != null) 'id': id,
         'name': name,
         'location': location,
         'sportDTO': sportDTO?.toJson(),

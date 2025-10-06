@@ -16,7 +16,6 @@ class _CourtListScreenState extends State<CourtListScreen> {
   late CourtBloc _bloc;
   StreamSubscription<String>? _msgSub;
 
-  // Búsqueda local
   final TextEditingController _searchCtrl = TextEditingController();
   String _query = '';
 
@@ -62,7 +61,7 @@ class _CourtListScreenState extends State<CourtListScreen> {
     if (court == null) {
       await _bloc.createCourt(result);
     } else {
-      // defensivo: no intentes actualizar sin id
+    
       if (court.id == null) {
         messenger.showSnackBar(
           const SnackBar(
@@ -75,7 +74,6 @@ class _CourtListScreenState extends State<CourtListScreen> {
       await _bloc.updateCourt(result.copyWith(id: court.id));
     }
 
-    // Refrescar lista tras crear/editar
     await _bloc.loadCourts();
     messenger.hideCurrentSnackBar();
   }
@@ -115,7 +113,6 @@ class _CourtListScreenState extends State<CourtListScreen> {
       return;
     }
 
-    // deleteCourt() devuelve void -> solo esperamos y luego refrescamos
     await _bloc.deleteCourt(id);
     await _bloc.loadCourts();
   }
@@ -172,7 +169,7 @@ class _CourtListScreenState extends State<CourtListScreen> {
           }
 
           final all = snapshot.data!;
-          // Filtro local por nombre
+          
           final courts = _query.isEmpty
               ? all
               : all

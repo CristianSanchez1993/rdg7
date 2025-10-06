@@ -56,7 +56,7 @@ class _UserListScreenState extends State<UserListScreen> {
   }
 
   void mostrarDetalleUsuario(BuildContext context, UserModel user) {
-    // 1) Elegimos colores según estado
+  
     const activeGreen = Color(0xFF16A34A);
     final inactiveGray = Theme.of(context).colorScheme.outline;
 
@@ -68,7 +68,7 @@ class _UserListScreenState extends State<UserListScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors
-          .transparent, // 2) Importante: transparente para que se vea nuestro contenedor con borde
+          .transparent,
       builder: (_) {
         final surface = Theme.of(context).colorScheme.surface;
         final onSurface = Theme.of(context).colorScheme.onSurface;
@@ -84,13 +84,13 @@ class _UserListScreenState extends State<UserListScreen> {
               border: Border.all(
                 color: borderColor,
                 width: 1.5,
-              ), // 3) Borde segun estado
+              ),
               boxShadow: [
                 BoxShadow(
                   offset: const Offset(0, -2),
                   blurRadius: 12,
                   spreadRadius: -4,
-                  color: shadowColor, // 4) Sombrita tinteada
+                  color: shadowColor,
                 ),
               ],
             ),
@@ -100,7 +100,7 @@ class _UserListScreenState extends State<UserListScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // 5) Handle superior
+                    
                     Container(
                       width: 50,
                       height: 5,
@@ -111,7 +111,6 @@ class _UserListScreenState extends State<UserListScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // 6) Título centrado
                     Text(
                       'Información usuario',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -126,7 +125,6 @@ class _UserListScreenState extends State<UserListScreen> {
 
                     const SizedBox(height: 12),
 
-                    // 7) Contenido (filas compactas)
                     _InfoRow(label: 'ID', value: '${user.id}'),
                     _InfoRow(
                       label: 'Identificación',
@@ -155,7 +153,6 @@ class _UserListScreenState extends State<UserListScreen> {
 
                     const SizedBox(height: 16),
 
-                    // 8) Botón cerrar alineado a la derecha
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -188,7 +185,7 @@ class _UserListScreenState extends State<UserListScreen> {
                   textInputAction: TextInputAction.search,
                   onSubmitted: (_) => buscarPorId(),
                   keyboardType: TextInputType
-                      .number, // si luego quieres buscar por nombre, quita esto
+                      .number, 
                   decoration: InputDecoration(
                     hintText: 'Buscar por ID',
                     prefixIcon: const Icon(
@@ -203,7 +200,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       vertical: 12,
                       horizontal: 12,
                     ),
-                    // Bordes redondeados
+                    
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide(
@@ -285,18 +282,18 @@ class _UserListScreenState extends State<UserListScreen> {
                           await bloc.loadUsers();
                         }
                       },
-                      //Color de borde según estado
+                      
                       borderColor: (_usuarioFiltrado!.isActive == true)
-                          ? const Color(0xFF16A34A) //Activo
+                          ? const Color(0xFF16A34A)
                           : Theme.of(
                               context,
-                            ).colorScheme.outline.withValues(alpha: 0.8), //Inactivo
+                            ).colorScheme.outline.withValues(alpha: 0.8),
 
                       shadowColor: (_usuarioFiltrado!.isActive == true)
-                          ? const Color(0xFF16A34A).withValues(alpha: 0.35) //Activo
+                          ? const Color(0xFF16A34A).withValues(alpha: 0.35)
                           : Theme.of(
                               context,
-                            ).colorScheme.outline.withValues(alpha: 0.35), //Inactivo
+                            ).colorScheme.outline.withValues(alpha: 0.35),
                     ),
                   ],
                 )
@@ -322,7 +319,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       separatorBuilder: (context, index) =>
                           const SizedBox(height: 2),
                       itemBuilder: (context, index) {
-                        final user = users[index]; // <-- aquí SI existe 'user'
+                        final user = users[index];
 
                         return UserCard(
                           name: '${user.firstName} ${user.lastName}',
@@ -370,14 +367,14 @@ class _UserListScreenState extends State<UserListScreen> {
                               await bloc.loadUsers();
                             }
                           },
-                          //Color de borde según estado
+                          
                           borderColor: (user.isActive == true)
                               ? const Color(0xFF16A34A)
                               : Theme.of(
                                   context,
                                 ).colorScheme.outline..withValues(alpha: 0.8),
 
-                          // Sombra tinteada según estado
+                          
                           shadowColor: (user.isActive == true)
                               ? const Color(0xFF16A34A).withValues(alpha: 0.35)
                               : Theme.of(
@@ -408,7 +405,6 @@ class _UserListScreenState extends State<UserListScreen> {
   );
 }
 
-// ========= Degradés reutilizables =========
 class AppGradients {
   static const LinearGradient primary = LinearGradient(
     begin: Alignment.topLeft,
@@ -495,7 +491,6 @@ class GradientFab extends StatelessWidget {
     );
 }
 
-// ========= Card de usuario =========
 class UserCard extends StatelessWidget {
   final String name;
   final String email;
@@ -503,7 +498,6 @@ class UserCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback? onTap;
 
-  /// Color del borde
   final Color? borderColor;
   final Color? shadowColor;
 
@@ -535,25 +529,25 @@ class UserCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-      // Sombra solo en la parte inferior (no const porque usa sColor)
+      
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
             offset: const Offset(0, 6),
             blurRadius: 12,
             spreadRadius: -6,
-            color: sColor, // usa variable -> no puede ser const
+            color: sColor,
           ),
         ],
       ),
       child: Card(
-        elevation: 0, // la sombra la da el Container
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
             color: bColor,
             width: 1.5,
-          ), // 👈 usa bColor (C mayúscula)
+          ), 
         ),
         child: ListTile(
           onTap: onTap,
@@ -592,7 +586,6 @@ class UserCard extends StatelessWidget {
   }
 }
 
-/// Botón circular con ícono (bonito + ripple)
 class _ActionIcon extends StatelessWidget {
   final IconData icon;
   final Color bg;
