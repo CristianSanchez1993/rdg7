@@ -3,6 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rdg7/bloc/user_bloc.dart';
 import 'package:rdg7/model/user_model.dart';
 
+const kCardBorderBlue = Color(0xFF3B82F6);
+const kCardShadowBlue = Color(0xFF1E3A8A);
+const kGradBlueEnd = Color(0xFF2563EB);
+const kGradBlueStart = Color(0xFF60A5FA); // blue-400
+
 class UserFormScreen extends StatefulWidget {
   final UserModel? user;
 
@@ -14,6 +19,7 @@ class UserFormScreen extends StatefulWidget {
 
 class _UserFormScreenState extends State<UserFormScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _scrollCtrl = ScrollController();
   bool _formularioValido = false;
 
   late TextEditingController _idController;
@@ -83,6 +89,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
     _lastNameController.dispose();
     _secondLastNameController.dispose();
     _phoneController.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
   }
 
@@ -128,13 +135,48 @@ class _UserFormScreenState extends State<UserFormScreen> {
     String label,
     TextEditingController controller, {
     bool obscure = false,
-  }) => TextFormField(
-    controller: controller,
-    obscureText: obscure,
-    validator: (value) =>
-        value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
-    decoration: InputDecoration(labelText: label),
-  );
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      validator: (value) =>
+          value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: 15,
+          color: scheme.onSurfaceVariant,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(
+            color: Color.fromARGB(255, 150, 191, 241),
+            width: 1,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(
+            color: Color.fromARGB(255, 150, 191, 241),
+            width: 1,
+          ),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderSide: BorderSide(color: kCardBorderBlue, width: 1.6),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 12,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,81 +191,205 @@ class _UserFormScreenState extends State<UserFormScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              buildTextField('Identificación', _identificationController),
-              buildTextField('Contraseña', _passwordController, obscure: true),
-              buildTextField('Correo Electrónico', _emailController),
-              buildTextField('Primer Nombre', _firstNameController),
-              buildTextField('Segundo Nombre', _secondNameController),
-              buildTextField('Apellido', _lastNameController),
-              buildTextField('Segundo Apellido', _secondLastNameController),
-              buildTextField('Teléfono', _phoneController),
-
-              const SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Estado del usuario:',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Row(
-                    children: [
-                      Text(_isActive ? 'Activo' : 'Inactivo'),
-                      Switch(
-                        value: _isActive,
-                        onChanged: (value) {
-                          setState(() {
-                            _isActive = value;
-                          });
-                        },
-                        activeThumbColor: Colors.teal,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, Color.fromARGB(255, 157, 188, 228)],
+          ),
+        ),
+        child: SafeArea(
+          child: Scrollbar(
+            controller: _scrollCtrl, // <- mantenemos tu ScrollController
+            thumbVisibility: true, // <- barra visible a la derecha
+            child: SingleChildScrollView(
+              controller: _scrollCtrl,
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 680),
+                  child: Form(
+                    key: _formKey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            offset: const Offset(0, 6),
+                            blurRadius: 14,
+                            spreadRadius: -6,
+                            color: kCardShadowBlue.withValues(alpha: 0.28),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                      child: Card(
+                        elevation: 0,
+                        color: Colors.white,
+                        surfaceTintColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(
+                            color: kCardBorderBlue, // borde azul
+                            width: 1.4,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                widget.user != null
+                                    ? 'Editar usuario'
+                                    : 'Crear usuario',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 12),
+                              const Divider(height: 1),
+                              const SizedBox(height: 16),
 
-              const SizedBox(height: 20),
+                              // --- Campos ---
+                              buildTextField(
+                                'Identificación',
+                                _identificationController,
+                              ),
+                              const SizedBox(height: 12),
+                              buildTextField(
+                                'Contraseña',
+                                _passwordController,
+                                obscure: true,
+                              ),
+                              const SizedBox(height: 12),
+                              buildTextField(
+                                'Correo Electrónico',
+                                _emailController,
+                              ),
+                              const SizedBox(height: 12),
+                              buildTextField(
+                                'Primer Nombre',
+                                _firstNameController,
+                              ),
+                              const SizedBox(height: 12),
+                              buildTextField(
+                                'Segundo Nombre',
+                                _secondNameController,
+                              ),
+                              const SizedBox(height: 12),
+                              buildTextField('Apellido', _lastNameController),
+                              const SizedBox(height: 12),
+                              buildTextField(
+                                'Segundo Apellido',
+                                _secondLastNameController,
+                              ),
+                              const SizedBox(height: 12),
+                              buildTextField('Teléfono', _phoneController),
 
-              ElevatedButton(
-                onPressed: _formularioValido ? saveUser : null,
-                style: ButtonStyle(
-                  padding: WidgetStateProperty.all(
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  ),
-                  shape: WidgetStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                              const SizedBox(height: 20),
+
+                              // --- Estado ---
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Estado del usuario:',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(_isActive ? 'Activo' : 'Inactivo'),
+                                      Switch(
+                                        value: _isActive,
+                                        onChanged: (value) =>
+                                            setState(() => _isActive = value),
+                                        activeThumbColor: Colors.teal,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // --- Botón ---
+                              GradientButtonWide(
+                                label: widget.user != null
+                                    ? 'Actualizar'
+                                    : 'Crear',
+                                enabled: _formularioValido,
+                                onPressed: _formularioValido ? saveUser : null,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  backgroundColor: WidgetStateProperty.resolveWith<Color>((
-                    states,
-                  ) {
-                    if (states.contains(WidgetState.disabled)) {
-                      return Colors.blue.withValues(
-                        alpha: 0.4,
-                      );
-                    }
-                    return Colors.blue;
-                  }),
-                  foregroundColor: WidgetStateProperty.all(Colors.white),
                 ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GradientButtonWide extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool enabled;
+
+  const GradientButtonWide({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.enabled = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final gradient = const LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [kGradBlueStart, kGradBlueEnd],
+    );
+
+    return Opacity(
+      opacity: enabled ? 1 : 0.45,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(28),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 12,
+                offset: Offset(0, 6),
+                color: Color(0x33000000),
+              ),
+            ],
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(28),
+            onTap: enabled ? onPressed : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(
                 child: Text(
-                  isEditing ? 'Actualizar' : 'Crear',
+                  label, 
                   style: const TextStyle(
+                    color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
