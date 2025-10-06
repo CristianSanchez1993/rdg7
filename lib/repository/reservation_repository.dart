@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+
 import '../model/reservation_model.dart';
 import '../resource/constants.dart';
 
@@ -102,7 +103,7 @@ class ReservationRepository {
   Future<ReservationModel?> updateReservation(ReservationModel reservation) async {
     try {
       final response = await http.put(
-        Uri.parse('${Constants.urlAuthority}/${Constants.reservationAPIUpdate}/${reservation.id}'),
+        Uri.parse('${Constants.urlAuthority}/${Constants.reservationAPIUpdate}'),
         headers: getHeaders(),
         body: jsonEncode(reservation.toJson()),
       );
@@ -133,7 +134,7 @@ class ReservationRepository {
         headers: getHeaders(),
       );
 
-      if (response.statusCode == 204 || response.statusCode == 200) {
+      if (response.statusCode == 200) {
         return true;
       } else {
         _errorController.add(
