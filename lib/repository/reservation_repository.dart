@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+
 import '../model/reservation_model.dart';
 import '../resource/constants.dart';
 
@@ -15,7 +16,6 @@ class ReservationRepository {
         HttpHeaders.authorizationHeader: Constants.authorizationHeader,
       };
 
-  /// Obtener todas las reservaciones
   Future<List<ReservationModel>> getReservations() async {
     try {
       final response = await http.get(
@@ -45,7 +45,6 @@ class ReservationRepository {
     return [];
   }
 
-  /// Obtener reservación por ID
   Future<ReservationModel?> getReservationById(String id) async {
     try {
       final response = await http.get(
@@ -71,7 +70,6 @@ class ReservationRepository {
     return null;
   }
 
-  /// Crear nueva reservación
   Future<ReservationModel?> createReservation(ReservationModel reservation) async {
     try {
       final response = await http.post(
@@ -98,11 +96,10 @@ class ReservationRepository {
     return null;
   }
 
-  /// Actualizar reservación
   Future<ReservationModel?> updateReservation(ReservationModel reservation) async {
     try {
       final response = await http.put(
-        Uri.parse('${Constants.urlAuthority}/${Constants.reservationAPIUpdate}/${reservation.id}'),
+        Uri.parse('${Constants.urlAuthority}/${Constants.reservationAPIUpdate}'),
         headers: getHeaders(),
         body: jsonEncode(reservation.toJson()),
       );
@@ -125,7 +122,6 @@ class ReservationRepository {
     return null;
   }
 
-  /// Eliminar reservación
   Future<bool> deleteReservation(String id) async {
     try {
       final response = await http.delete(
@@ -133,7 +129,7 @@ class ReservationRepository {
         headers: getHeaders(),
       );
 
-      if (response.statusCode == 204 || response.statusCode == 200) {
+      if (response.statusCode == 200) {
         return true;
       } else {
         _errorController.add(
