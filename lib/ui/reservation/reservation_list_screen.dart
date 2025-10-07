@@ -147,7 +147,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     appBar: AppBar(centerTitle: true, title: const Text('Lista de Reservas')),
     body: Column(
       children: [
-        // === Barra de búsqueda automática ===
+        
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
           child: TextField(
@@ -174,7 +174,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           ),
         ),
 
-        // === Lista de reservas ===
         Expanded(
           child: StreamBuilder<List<ReservationModel>>(
             stream: context.read<ReservationBloc>().reservationListStream,
@@ -262,7 +261,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   );
 }
 
-// === Tarjeta de reserva ===
 class ReservationCard extends StatelessWidget {
   final ReservationModel reserva;
   final VoidCallback onEdit;
@@ -348,7 +346,6 @@ class ReservationCard extends StatelessWidget {
   }
 }
 
-// === Widgets auxiliares ===
 class GradientFab extends StatelessWidget {
   final VoidCallback onPressed;
   const GradientFab({super.key, required this.onPressed});
