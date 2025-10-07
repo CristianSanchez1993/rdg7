@@ -7,6 +7,10 @@ class ReservationModel {
   final String statusCode;
   final String? notes;
 
+  // NUEVOS CAMPOS para mostrar nombre de cancha y usuario
+  final String? courtName;
+  final String? userFullName;
+
   ReservationModel({
     required this.id,
     required this.courtId,
@@ -15,10 +19,11 @@ class ReservationModel {
     required this.endAt,
     required this.statusCode,
     this.notes,
+    this.courtName,
+    this.userFullName,
   });
 
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
-    
     final Map<String, dynamic> userDTO =
         (json['userDTO'] as Map?)?.cast<String, dynamic>() ?? {};
     final Map<String, dynamic> courtDTO =
@@ -26,6 +31,15 @@ class ReservationModel {
 
     final int userId = _toInt(userDTO['id'] ?? json['user_id']);
     final int courtId = _toInt(courtDTO['id'] ?? json['court_id']);
+
+    //  Capturamos nombres directamente desde los DTO
+    final String? courtName = courtDTO['name']?.toString();
+    final String userFullName =
+        ([userDTO['firstName'], userDTO['lastName']]
+                .where((s) => s != null && s.toString().trim().isNotEmpty)
+                .join(' ')
+                .trim())
+            .toString();
 
     return ReservationModel(
       id: _toInt(json['id']),
@@ -39,13 +53,15 @@ class ReservationModel {
       statusCode: (json['statusCode'] ?? json['status_code'] ?? 'PENDING')
           .toString(),
       notes: json['notes']?.toString(),
+      courtName: (courtName?.isNotEmpty ?? false) ? courtName : null,
+      userFullName: userFullName.isNotEmpty ? userFullName : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'courtDTO': {'id': courtId},
-    'userDTO': {'id': userId},
+    'courtDTO': {'id': courtId, 'name': courtName},
+    'userDTO': {'id': userId, 'fullName': userFullName},
     'startAt': startAt.toIso8601String(),
     'endAt': endAt.toIso8601String(),
     'statusCode': statusCode,
