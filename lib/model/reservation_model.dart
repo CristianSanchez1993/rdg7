@@ -7,7 +7,6 @@ class ReservationModel {
   final String statusCode;
   final String? notes;
 
-  // NUEVOS CAMPOS para mostrar nombre de cancha y usuario
   final String? courtName;
   final String? userFullName;
 
@@ -32,7 +31,6 @@ class ReservationModel {
     final int userId = _toInt(userDTO['id'] ?? json['user_id']);
     final int courtId = _toInt(courtDTO['id'] ?? json['court_id']);
 
-    //  Capturamos nombres directamente desde los DTO
     final String? courtName = courtDTO['name']?.toString();
     final String userFullName =
         ([userDTO['firstName'], userDTO['lastName']]
