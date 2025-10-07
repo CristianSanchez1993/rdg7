@@ -81,7 +81,6 @@ class _SportFormScreenState extends State<SportFormScreen> {
 
                 const SizedBox(height: 16),
 
-                // Acciones
                 Row(
                   children: [
                     Expanded(

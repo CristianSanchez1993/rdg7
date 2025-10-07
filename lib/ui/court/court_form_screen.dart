@@ -53,7 +53,6 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
         _sports = list;
         _loadingSports = false;
 
-        // Si venimos editando y el id ya no existe, limpiar selección
         if (_selectedSportId != null &&
             !_sports.any((s) => s.id == _selectedSportId)) {
           _selectedSportId = null;
@@ -92,7 +91,7 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
       id: widget.court?.id,
       name: _norm(_nameController.text),
       location: _norm(_locationController.text),
-      sportId: _selectedSportId, // enviamos el id elegido
+      sportId: _selectedSportId, 
       pricePerHour: parsedPrice ?? 0.0,
       isActive: _isActive,
     );
@@ -164,7 +163,6 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                     ),
                     const SizedBox(height: 15),
 
-                    // Deporte (Dropdown con initialValue)
                     _loadingSports
                         ? const ListTile(
                             leading: SizedBox(
@@ -175,7 +173,7 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                             title: Text('Cargando deportes…'),
                           )
                         : DropdownButtonFormField<int>(
-                            initialValue: _selectedSportId, // ← sin warning
+                            initialValue: _selectedSportId, 
                             items: _sports
                                 .map(
                                   (s) => DropdownMenuItem<int>(
@@ -204,7 +202,6 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
 
                     const SizedBox(height: 15),
 
-                    // Precio por hora
                     TextFormField(
                       controller: _priceController,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -231,7 +228,6 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Activo
                     SwitchListTile(
                       title: Text(
                         'Activo',
@@ -272,7 +268,6 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                     ),
                     const SizedBox(height: 30),
 
-                    // Botón Guardar/Actualizar
                     SizedBox(
                       width: double.infinity,
                       height: 55,
