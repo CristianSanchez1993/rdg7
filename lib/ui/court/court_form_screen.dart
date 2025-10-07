@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../model/court_model.dart';
+import '../../repository/sport_repository.dart';
+import '../../model/sport_model.dart';
 
 class CourtFormScreen extends StatefulWidget {
   final CourtModel? court;
@@ -14,51 +16,87 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _locationController;
-  late TextEditingController _sportIdController;
   late TextEditingController _priceController;
   bool _isActive = true;
+
+  // Dropdown de deportes
+  final SportRepository _sportRepo = SportRepository();
+  List<SportModel> _sports = [];
+  bool _loadingSports = true;
+  int? _selectedSportId;
 
   @override
   void initState() {
     super.initState();
+
     _nameController = TextEditingController(text: widget.court?.name ?? '');
     _locationController =
         TextEditingController(text: widget.court?.location ?? '');
-    _sportIdController = TextEditingController(
-      text: (widget.court?.sportId ?? 0) == 0 ? '' : widget.court!.sportId.toString(),
-    );
+
+    final double? price = widget.court?.pricePerHour;
     _priceController = TextEditingController(
-      text: widget.court?.pricePerHour == null || (widget.court?.pricePerHour ?? 0) == 0
-          ? ''
-          : widget.court!.pricePerHour.toString(),
+      text: (price == null || price == 0) ? '' : price.toString(),
     );
+
     _isActive = widget.court?.isActive ?? true;
+    _selectedSportId = (widget.court?.sportId ?? 0) == 0
+        ? null
+        : widget.court?.sportId;
+
+    _loadSports();
+  }
+
+  Future<void> _loadSports() async {
+    try {
+      final list = await _sportRepo.getSports();
+      setState(() {
+        _sports = list;
+        _loadingSports = false;
+
+        // Si venimos editando y el id ya no existe, limpiar selección
+        if (_selectedSportId != null &&
+            !_sports.any((s) => s.id == _selectedSportId)) {
+          _selectedSportId = null;
+        }
+      });
+    } catch (_) {
+      setState(() => _loadingSports = false);
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _locationController.dispose();
-    _sportIdController.dispose();
     _priceController.dispose();
     super.dispose();
   }
 
-  void _saveForm() {
-    if (_formKey.currentState!.validate()) {
-      final int? parsedSportId = int.tryParse(_sportIdController.text);
-      final double? parsedPrice = double.tryParse(_priceController.text);
+  String _norm(String s) => s.trim();
 
-      final court = CourtModel(
-        id: widget.court?.id,
-        name: _nameController.text.trim(),
-        location: _locationController.text.trim(),
-        sportId: parsedSportId,
-        pricePerHour: parsedPrice ?? 0.0,
-        isActive: _isActive,
+  void _saveForm() {
+    final isFormValid = _formKey.currentState!.validate();
+    if (!isFormValid) return;
+
+    if (_selectedSportId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona un deporte')),
       );
-      Navigator.pop(context, court);
+      return;
     }
+
+    final double? parsedPrice =
+        double.tryParse(_priceController.text.trim());
+
+    final court = CourtModel(
+      id: widget.court?.id,
+      name: _norm(_nameController.text),
+      location: _norm(_locationController.text),
+      sportId: _selectedSportId, // enviamos el id elegido
+      pricePerHour: parsedPrice ?? 0.0,
+      isActive: _isActive,
+    );
+    Navigator.pop(context, court);
   }
 
   @override
@@ -79,14 +117,16 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
           child: Card(
             elevation: 8,
             shadowColor: Colors.black26,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Form(
                 key: _formKey,
                 child: ListView(
                   children: [
+                    // Nombre
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
@@ -99,9 +139,13 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                         ),
                       ),
                       validator: (value) =>
-                          value == null || value.isEmpty ? 'Campo requerido' : null,
+                          value == null || value.trim().isEmpty
+                              ? 'Campo requerido'
+                              : null,
                     ),
                     const SizedBox(height: 15),
+
+                    // Ubicación
                     TextFormField(
                       controller: _locationController,
                       decoration: InputDecoration(
@@ -114,35 +158,58 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                         ),
                       ),
                       validator: (value) =>
-                          value == null || value.isEmpty ? 'Campo requerido' : null,
+                          value == null || value.trim().isEmpty
+                              ? 'Campo requerido'
+                              : null,
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(
-                      controller: _sportIdController,
-                      decoration: InputDecoration(
-                        labelText: 'ID del Deporte',
-                        prefixIcon: const Icon(Icons.numbers),
-                        filled: true,
-                        fillColor: Colors.blue[50],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo requerido';
-                        }
-                        final n = int.tryParse(value);
-                        if (n == null || n <= 0) {
-                          return 'Debe ser un número mayor a 0';
-                        }
-                        return null;
-                      },
-                    ),
+
+                    // Deporte (Dropdown con initialValue)
+                    _loadingSports
+                        ? const ListTile(
+                            leading: SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            title: Text('Cargando deportes…'),
+                          )
+                        : DropdownButtonFormField<int>(
+                            initialValue: _selectedSportId, // ← sin warning
+                            items: _sports
+                                .map(
+                                  (s) => DropdownMenuItem<int>(
+                                    value: s.id,
+                                    child: Text(
+                                      '${s.id} – ${s.name}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (val) =>
+                                setState(() => _selectedSportId = val),
+                            decoration: InputDecoration(
+                              labelText: 'Deporte',
+                              prefixIcon: const Icon(Icons.sports),
+                              filled: true,
+                              fillColor: Colors.blue[50],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) =>
+                                value == null ? 'Selecciona un deporte' : null,
+                          ),
+
                     const SizedBox(height: 15),
+
+                    // Precio por hora
                     TextFormField(
                       controller: _priceController,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Precio por Hora',
                         prefixIcon: const Icon(Icons.attach_money),
@@ -152,13 +219,10 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Campo requerido';
-                        }
-                        final d = double.tryParse(value);
+                        final raw = (value ?? '').trim();
+                        if (raw.isEmpty) return 'Campo requerido';
+                        final d = double.tryParse(raw);
                         if (d == null || d <= 0) {
                           return 'Debe ser un valor numérico > 0';
                         }
@@ -166,6 +230,8 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                       },
                     ),
                     const SizedBox(height: 20),
+
+                    // Activo
                     SwitchListTile(
                       title: Text(
                         'Activo',
@@ -205,6 +271,8 @@ class _CourtFormScreenState extends State<CourtFormScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
+
+                    // Botón Guardar/Actualizar
                     SizedBox(
                       width: double.infinity,
                       height: 55,
