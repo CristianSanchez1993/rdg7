@@ -36,6 +36,14 @@ class ReservationBloc {
     }
   }
 
+  Future<ReservationModel?> buscarPorId(String id) async {
+    try {
+      return _reservationList.firstWhere((r) => r.id.toString() == id);
+    } catch (_) {
+      return await _repository.getReservationById(id);
+    }
+  }
+
   Future<void> createReservation(ReservationModel reservation) async {
     final created = await _repository.createReservation(reservation);
     if (created != null) {
